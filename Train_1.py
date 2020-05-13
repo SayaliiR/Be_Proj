@@ -14,7 +14,7 @@ import numpy as np
 # In[2]:
 
 
-df=pd.read_csv(r"C:\Users\Lenovo\Desktop\BE PROJECT/video_Data23.csv",sep=',')
+df=pd.read_csv(r"video_Data23.csv", index_col=None, sep=',')
 
 
 # In[3]:
@@ -64,14 +64,6 @@ data['viewerID'] = data['viewer'].astype("category").cat.codes
 
 
 data
-
-
-# In[10]:
-
-
-item_lookup = data[['videoID', 'gConfId']].drop_duplicates()
-item_lookup['videoID'] = item_lookup.videoID.astype(str)
-item_lookup.loc[0,:]
 
 
 # In[11]:
@@ -175,44 +167,9 @@ data_conf = (product_train* alpha_val).astype('double')
 model.fit(data_conf)
 user_vecs = model.user_factors
 item_vecs = model.item_factors
-
-
-# In[21]:
-#---------------------
-# FIND SIMILAR ITEMS
-#---------------------
-"""
-item_id = 7
-n_similar = 10
-
-# Use implicit to get similar items.
-similar = model.similar_items(item_id, n_similar)
-
-# Print the names of our most similar artists
-for item in similar:
-    idx, score = item
-   # print(item_lookup.gConfId.loc[item_lookup.videoID == str(idx)].iloc[0])
-   """
-
-
-
-# In[22]:
-
-
-#
-# CREATE USER RECOMMENDATIONS
-#
-
-import urllib.parse as urlparse
-from urllib.parse import parse_qs
-
-#def get_id(self):
- #   url = 'http://127.0.0.1:8080/Reccomendations?viewer_id='
-  #  parsed = urlparse.urlparse(url)
-   # return(parse_qs(parsed.query)['viewer_id'])
     
     
-#viewer_id=5
+
 def get_reccomendation(viewer_id,product_train1):
     recommended = model.recommend(int(viewer_id),product_train1)
     videos = []
@@ -220,14 +177,13 @@ def get_reccomendation(viewer_id,product_train1):
 
     for item in recommended:
         idx, score = item
-        videos.append(item_lookup.gConfId.loc[item_lookup.videoID == str(idx)].iloc[0])
+        videos.append(data.gConfId.loc[data.videoID == str(idx)].iloc[0])
         video_scores.append(score)
     
     recommendations =pd.DataFrame({'video_recommended': videos, 'score': video_scores})
     return recommendations 
 
-#recommendations = get_reccomendation(int(viewer_id),product_train1)
-#print(recommendations)
+
 
 
 
@@ -241,70 +197,17 @@ def get_reccomendation(viewer_id,product_train1):
     
 
 
-# In[23]:
-
-
-
-    
-
-
-# In[24]:
-
-"""
-from sklearn import metrics
-
-
-# In[25]:
-
-
-def auc_score(predictions, test):
-    fpr, tpr, thresholds = metrics.roc_curve(test, predictions)
-    return metrics.auc(fpr, tpr) 
-
-
-# In[26]:
-
-
-def calc_mean_auc(training_set, altered_users, predictions, test_set):
-    store_auc = [] # An empty list to store the AUC for each user that had an item removed from the training set
-    popularity_auc = [] # To store popular AUC scores
-    pop_items = np.array(test_set.sum(axis = 0)).reshape(-1) # Get sum of item iteractions to find most popular
-    item_vecs = predictions[1]
-    for user in altered_users: # Iterate through each user that had an item altered
-        training_row = training_set[user,:].toarray().reshape(-1) # Get the training set row
-        zero_inds = np.where(training_row == 0) # Find where the interaction had not yet occurred
-        # Get the predicted values based on our user/item vectors
-        user_vec = predictions[0][user,:]
-        pred = user_vec.dot(item_vecs).toarray()[0,zero_inds].reshape(-1)
-        # Get only the items that were originally zero
-        # Select all ratings from the MF prediction for this user that originally had no iteraction
-        actual = test_set[user,:].toarray()[0,zero_inds].reshape(-1) 
-        # Select the binarized yes/no interaction pairs from the original full data
-        # that align with the same pairs in training 
-        pop = pop_items[zero_inds] # Get the item popularity for our chosen items
-        store_auc.append(auc_score(pred, actual)) # Calculate AUC for the given user and store
-        popularity_auc.append(auc_score(pop, actual)) # Calculate AUC using most popular and score
-    # End users iteration
-    
-    return float('%.3f'%np.mean(store_auc)), float('%.3f'%np.mean(popularity_auc))  
-   # Return the mean AUC rounded to three decimal places for both test and popularity benchmark
-
-
-# In[27]:
-
-
-calc_mean_auc(product_train1, product_users_altered, 
-              [sparse.csr_matrix(user_vecs), sparse.csr_matrix(item_vecs.T)], product_test)
-
-
-# In[ ]:
 
 
 
 
 
-# In[ ]:
 
-"""
+
+
+
+
+
+
 
 
