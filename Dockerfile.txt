@@ -1,0 +1,13 @@
+FROM python:3
+WORKDIR /usr/src/app
+
+COPY video_Data23.csv .
+COPY Train_0.py .
+COPY Train_1.py .
+COPY app_1.py .
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+CMD python ./App_1.py
